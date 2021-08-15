@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "./common.proto";
+
+package weather;
+
+service WeatherFetcher {
+  rpc GetLatestWeatherReport (google.protobuf.Empty) returns (WeatherResponseProto);
+  rpc GetAllWeatherReports (google.protobuf.Empty) returns (stream WeatherResponseProto);
+}
+
+message PrecipitationProto {
+  float LastHour = 1;
+  float Last3Hours = 2;
+  float Last12Hours = 3;
+  float Last24Hours = 4;
+}
+
+message BarProto {
+  common.ProtoMinioFile WindDirectionIcon = 1;
+  common.ProtoMinioFile WeatherIcon = 2;
+  float Precipitation = 3;
+  float Temperature = 4;
+  float WindSpeed = 5;
+  google.protobuf.Timestamp ValidTime = 6;
+}
+
+message WeatherForecastProto {
+  float MinTemp = 1;
+  float MaxTemp = 2;
+  float MinWindSpeed = 3;
+  float MaxWindSpeed = 4;
+  google.protobuf.Timestamp startTime = 5;
+  google.protobuf.Timestamp endTime = 6;
+  repeated BarProto Forecast = 7;
+}
+
+message WeatherProto {
+  common.ProtoMinioFile WeatherIcon = 1;
+  string WeatherDescription = 2;
+  float Temperature = 3;
+  float WindSpeed = 4;
+  float WindGustSpeed = 5;
+  common.ProtoMinioFile WindDirection = 6;
+  common.ProtoMinioFile RadarImage = 7;
+  PrecipitationProto PrecipitationValue = 8;
+  int32 Humidity = 9;
+  float Visibility = 10;
+  int32 CloudCover = 11;
+  WeatherForecastProto WeatherForecast = 12;
+}
+
+message WeatherResponseProto {
+  WeatherProto weather = 1;
+  common.Status status = 2;
+}

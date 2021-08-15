@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "./common.proto";
+
+package news;
+
+service NewsFetcher {
+  rpc GetAllArticles (google.protobuf.Empty) returns (stream ArticleResponse);
+  rpc GetArticle (ArticleRequest) returns (ArticleResponse);
+}
+
+message ArticleRequest {
+  string ArticleKey = 1;
+}
+
+message Article {
+  string Key = 1;
+  string Title = 2;
+  google.protobuf.Timestamp  Fetched = 3;
+  google.protobuf.Timestamp  Published = 4;
+  common.ProtoMinioFile Image = 5;
+  string Content = 6;
+  string Source = 7;
+}
+
+message ArticleResponse {
+  Article Article = 1;
+  common.Status Status = 2;
+}
