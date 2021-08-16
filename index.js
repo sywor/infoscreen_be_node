@@ -3,11 +3,16 @@ import WeatherFetcher from './weatherFetcher.js'
 import express from 'express'
 import path from 'path'
 import subdomain from 'express-subdomain'
+import cors from 'cors'
 
 var newsFetcher = new NewsFetcher()
 var weatherFetcher = new WeatherFetcher()
 var app = express()
 var router = express.Router()
+
+router.use(cors())
+
+router.get('/', (req, res) => res.json({test: 'api router success'}))
 
 router.get('/News/All', async (req, res) => {
     var articles = await newsFetcher.getAllArticles()
@@ -34,6 +39,6 @@ router.get('/Weather/All', async (req, res) => {
     res.json(weatherReports)
 })
 
-app.use(subdomain('api', router))
+app.use(subdomain('api.infoscreen', router))
 app.use(express.static(path.join(path.resolve(), 'public')))
 app.listen(80, '0.0.0.0')
