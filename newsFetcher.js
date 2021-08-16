@@ -2,6 +2,8 @@ import path from 'path'
 import grpc from '@grpc/grpc-js'
 import protoLoader from '@grpc/proto-loader'
 
+const url = process.env.NEWS_FETCHER_URL || 'ipv4:192.168.1.15:5001'
+
 export default class NewsFetcher {
     constructor() {
         const protoPath = path.join(path.resolve(), 'proto', 'news.proto')
@@ -19,7 +21,7 @@ export default class NewsFetcher {
         const news = grpc.loadPackageDefinition(packageDefinition).news
 
         const credentials = grpc.credentials.createInsecure()
-        this.client = new news.NewsFetcher('ipv4:192.168.1.15:5001', credentials)
+        this.client = new news.NewsFetcher(url, credentials)
         this.nextUpdate = Date.now() - 1000
     }
 

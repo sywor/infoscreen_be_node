@@ -2,6 +2,8 @@ import path from 'path'
 import grpc from '@grpc/grpc-js'
 import protoLoader from '@grpc/proto-loader'
 
+const url = process.env.WEATHER_FETCHER_URL || 'ipv4:192.168.1.14:5001'
+
 export default class WeatherFetcher {
     constructor() {
         const protoPath = path.join(path.resolve(), 'proto', 'weather.proto')
@@ -19,7 +21,7 @@ export default class WeatherFetcher {
         const weather = grpc.loadPackageDefinition(packageDefinition).weather
 
         const credentials = grpc.credentials.createInsecure()
-        this.client = new weather.WeatherFetcher('ipv4:192.168.1.14:5001', credentials)
+        this.client = new weather.WeatherFetcher(url, credentials)
         this.nextUpdate = Date.now() - 1000
     }
 
