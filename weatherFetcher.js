@@ -25,7 +25,7 @@ export default class WeatherFetcher {
         this.nextUpdate = Date.now() - 1000
     }
 
-    async getAllWeatherReports() {
+    async getAllWeatherReports(clientId) {
         return await new Promise((resolve, reject) => {
             var call = this.client.GetAllWeatherReports({})
 
@@ -39,7 +39,7 @@ export default class WeatherFetcher {
         })
     }
 
-    async getLatestWeatherReport() {
+    async getLatestWeatherReport(clientId) {
         return await new Promise((resolve, reject) => this.client.GetLatestWeatherReport({}, (error, response) => {
             if (error) {
                 return reject(error)

@@ -25,7 +25,7 @@ export default class NewsFetcher {
         this.nextUpdate = Date.now() - 1000
     }
 
-    async getAllArticles() {
+    async getAllArticles(clientId) {
         return await new Promise((resolve, reject) => {
             var call = this.client.GetAllArticles({})
 
@@ -39,7 +39,7 @@ export default class NewsFetcher {
         })
     }
 
-    async getSingleArticle(articleKey) {
+    async getSingleArticle(articleKey, clientId) {
         return await new Promise((resolve, reject) => this.client.GetArticle({ ArticleKey: articleKey }, (error, response) => {
             if (error) {
                 return reject(error)
@@ -48,7 +48,7 @@ export default class NewsFetcher {
         }))
     }
 
-    async getNextArticle() {
+    async getNextArticle(clientId) {
         var now = Date.now()
 
         if (now >= this.nextUpdate || this.articleBuffer == null) {

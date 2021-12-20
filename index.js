@@ -10,34 +10,49 @@ var weatherFetcher = new WeatherFetcher()
 var app = express()
 var router = express.Router()
 
-router.use(cors())
+app.use(cors())
 
-router.get('/', (req, res) => res.json({test: 'api router success'}))
+router.get('/', (req, res) => res.json({test: 'api up and running'}))
 
 router.get('/News/All', async (req, res) => {
-    var articles = await newsFetcher.getAllArticles()
+    var clientId = req.query.clientId
+    console.log('/News/All client id: %s', clientId)
+    var articles = await newsFetcher.getAllArticles(clientId)
     res.json(articles)
 })
 
-router.get('/News/Single', async (req, res) => {    
-    var article = await newsFetcher.getSingleArticle(req.query.articleKey)
+router.get('/News/Single', async (req, res) => {
+    var clientId = req.query.clientId
+    console.log('/News/Single client id: %s', clientId)
+    var article = await newsFetcher.getSingleArticle(req.query.articleKey, clientId)
     res.json(article)
 })
 
 router.get('/News/Next', async (req, res) => {
-    var article = await newsFetcher.getNextArticle()
+    var clientId = req.query.clientId
+    console.log('/News/Next client id: %s', clientId)
+    var article = await newsFetcher.getNextArticle(clientId)
     res.json(article)
 })
 
 router.get('/Weather/Latest', async (req, res) => {
-    var weatherReport = await weatherFetcher.getLatestWeatherReport()
+    var clientId = req.query.clientId
+    console.log('/Weather/Latest client id: %s', clientId)
+    var weatherReport = await weatherFetcher.getLatestWeatherReport(clientId)
     res.json(weatherReport)
 })
 
 router.get('/Weather/All', async (req, res) => {
-    var weatherReports = await weatherFetcher.getAllWeatherReports()
+    var clientId = req.query.clientId
+    console.log('/Weather/All client id: %s', clientId)
+    var weatherReports = await weatherFetcher.getAllWeatherReports(clientId)
     res.json(weatherReports)
 })
+
+// app.get('*', function(req, res){
+//     console.log(req.headers.host)
+//     res.status(404).send('nah man, you\'re lost');
+//   });
 
 app.use(subdomain('api.infoscreen', router))
 app.use(express.static(path.join(path.resolve(), 'public')))
