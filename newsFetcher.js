@@ -36,6 +36,9 @@ export default class NewsFetcher {
             })
 
             call.on('end', () => resolve(articles))
+            
+        }).catch((reason) => {
+            console.log('Failed to get all articles for client: %s reason: %s', clientId, reason)
         })
     }
 
@@ -45,7 +48,9 @@ export default class NewsFetcher {
                 return reject(error)
             }
             resolve(this.parseArticle(response))
-        }))
+        }))((reason) => {
+            console.log('Failed to get article with key: %s for client: %s reason: %s', articleKey, clientId, reason)
+        })
     }
 
     async getNextArticle(clientId) {
