@@ -39,6 +39,7 @@ export default class NewsFetcher {
             
         }).catch((reason) => {
             console.log('Failed to get all articles for client: %s reason: %s', clientId, reason)
+            return []
         })
     }
 
@@ -48,7 +49,7 @@ export default class NewsFetcher {
                 return reject(error)
             }
             resolve(this.parseArticle(response))
-        }))((reason) => {
+        })).catch((reason) => {
             console.log('Failed to get article with key: %s for client: %s reason: %s', articleKey, clientId, reason)
         })
     }
@@ -56,10 +57,16 @@ export default class NewsFetcher {
     async getNextArticle(clientId) {
         var now = Date.now()
 
-        if (now >= this.nextUpdate || this.articleBuffer == null) {
+        if (now >= this.nextUpdate || this.articleBuffer == null || this.articleBuffer.every(el => el === null)) {
             this.articleIndex = 0
             this.nextUpdate = now + 14400000 // 4 hours
             this.articleBuffer = await this.getAllArticles()
+
+            if(!(this.articleBuffer))
+            {
+                return null
+            }
+
             this.articleBuffer.sort((a1, a2) => {
                 return a2.Published - a1.Published
             })
@@ -78,6 +85,13 @@ export default class NewsFetcher {
     }
 
     parseArticle(response) {
+
+        if(response.Status && response.Status.Code === 'Failure')
+        {
+            console.log('Failed to fetch article, reason: ' + response.Status.Message)
+            return null
+        }
+
         const article = response.Article
 
         var fetched = new Date(1970, 0, 1)
