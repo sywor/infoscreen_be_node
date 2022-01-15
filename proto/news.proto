@@ -23,6 +23,7 @@ message Article {
   common.ProtoMinioFile Image = 5;
   string Content = 6;
   string Source = 7;
+  string Summary = 8;
 }
 
 message ArticleResponse {
