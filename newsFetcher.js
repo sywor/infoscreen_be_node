@@ -27,7 +27,7 @@ export default class NewsFetcher {
 
     async getAllArticles(clientId) {
         return await new Promise((resolve, reject) => {
-            var call = this.client.GetAllArticles({})
+            var call = this.client.GetArticles({ ArticleLimit: 100 })
 
             var articles = []
             call.on('error', error => reject(error))
@@ -57,12 +57,16 @@ export default class NewsFetcher {
     async getNextArticle(clientId) {
         var now = Date.now()
 
-        if (now >= this.nextUpdate || this.articleBuffer == null || this.articleBuffer.every(el => el === null)) {
+        if (now >= this.nextUpdate || 
+            this.articleBuffer == null || 
+            this.articleBuffer.lenght === 0 || 
+            this.articleBuffer.every(el => el === null)) 
+        {
             this.articleIndex = 0
             this.nextUpdate = now + 14400000 // 4 hours
             this.articleBuffer = await this.getAllArticles()
 
-            if(!(this.articleBuffer))
+            if(!(this.articleBuffer) || this.articleBuffer.lenght === 0)
             {
                 return null
             }
