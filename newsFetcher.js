@@ -57,18 +57,19 @@ export default class NewsFetcher {
     async getNextArticle(clientId) {
         var now = Date.now()
 
-        if (now >= this.nextUpdate || 
-            this.articleBuffer == null || 
-            this.articleBuffer.lenght === 0 || 
-            this.articleBuffer.every(el => el === null)) 
+        if (this.validateArticleBuffer(now)) 
         {
             this.articleIndex = 0
             this.nextUpdate = now + 14400000 // 4 hours
+            this.log(`Updating article buffer`)
+            this.oldArticleBuffer = Object.assign([], this.articleBuffer)
             this.articleBuffer = await this.getAllArticles()
+            this.log(`Recieved ${this.articleBuffer.length} articles`)
 
-            if(!(this.articleBuffer) || this.articleBuffer.lenght === 0)
+            if(this.validateArticleBuffer())
             {
-                return null
+                this.log(`Article buffer update failed, restoring backup`)
+                this.articleBuffer = Object.assign([], this.oldArticleBuffer)
             }
 
             this.articleBuffer.sort((a1, a2) => {
@@ -78,7 +79,9 @@ export default class NewsFetcher {
 
         var currentArticle = this.articleBuffer[this.articleIndex]
 
-        if (this.articleIndex >= this.articleBuffer.lenght - 1) {
+        this.log(`Returning article ${this.articleIndex + 1} of ${this.articleBuffer.length}`)
+
+        if (this.articleIndex >= this.articleBuffer.length - 1) {
             this.articleIndex = 0
         }
         else {
@@ -87,24 +90,43 @@ export default class NewsFetcher {
 
         return currentArticle
     }
-
+    
     parseArticle(response) {
-
+        
         if(response.Status && response.Status.Code === 'Failure')
         {
-            console.log('Failed to fetch article, reason: ' + response.Status.Message)
+            console.error('Failed to fetch article, reason: ' + response.Status.Message)
             return null
         }
-
+        
         const article = response.Article
-
+        
         var fetched = new Date(1970, 0, 1)
         fetched.setSeconds(article.Fetched.seconds)
         article.Fetched = fetched
-
+        
         var published = new Date(1970, 0, 1)
         published.setSeconds(article.Published.seconds)
         article.Published = published
         return article
+    }
+
+    validateArticleBuffer(now) {
+        if(now)
+        {
+            return now >= this.nextUpdate ||
+                    this.articleBuffer == null ||
+                    this.articleBuffer.lenght === 0 ||
+                    this.articleBuffer.every(el => el === null);
+        }
+
+        return  this.articleBuffer == null ||
+                this.articleBuffer.lenght === 0 ||
+                this.articleBuffer.every(el => el === null)
+    }
+
+    log(message)
+    {
+        console.log(`${new Date().toISOString()} # ${message}`)
     }
 }
