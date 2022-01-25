@@ -51,4 +51,4 @@ router.get('/Weather/All', async (req, res) => {
 
 app.use(subdomain('api.infoscreen', router))
 app.use(express.static(path.join(path.resolve(), 'public')))
-app.listen(8080, '0.0.0.0')
+app.listen(80, '0.0.0.0')
